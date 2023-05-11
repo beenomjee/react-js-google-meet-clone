@@ -1,5 +1,48 @@
 @import "../../styles";
 
+.topMenu {
+  @include position(fixed, 2rem, 3rem);
+  z-index: 5;
+  @include center();
+
+  & > button {
+    font-size: 3rem;
+  }
+
+  & > .menu {
+    @include position(absolute, calc(100%), 1rem);
+    z-index: 10;
+    background-color: $light-gray;
+    @include radius(1rem);
+    min-width: 20rem;
+    max-width: 80vw;
+    padding: 2.4rem 0;
+    transform-origin: 0 0;
+    transform: scale(0);
+    transition: transform 0.15s;
+    @include shadow($shadow-color);
+
+    &.open {
+      transform: scale(1);
+    }
+
+    & > button {
+      overflow: none;
+      border: none;
+      background-color: $light;
+      width: 100%;
+      padding: 1.2rem;
+      @include font($weight: 500);
+      text-transform: uppercase;
+      cursor: pointer;
+
+      &:hover {
+        filter: saturate(10);
+      }
+    }
+  }
+}
+
 .center {
   min-height: 100vh;
   @include center();

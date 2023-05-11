@@ -14,9 +14,11 @@ const setBasics = async (
   name
 ) => {
   const pc = new RTCPeerConnection(configuration);
+  let myVideoSender;
 
   for (const track of myStream.getTracks()) {
-    pc.addTrack(track, myStream);
+    const sender = pc.addTrack(track, myStream);
+    if (track.kind === "video") myVideoSender = sender;
   }
 
   pc.onicecandidate = (e) => {
@@ -62,7 +64,7 @@ const setBasics = async (
     videoContainerEl.querySelector("#divMine").className = "";
   };
 
-  return pc;
+  return [pc, myVideoSender];
 };
 
 export const createOffer = async (
@@ -72,7 +74,7 @@ export const createOffer = async (
   videoContainerEl,
   name
 ) => {
-  const pc = await setBasics(
+  const [pc, myVideoSender] = await setBasics(
     myStream,
     socket,
     userSocketId,
@@ -82,7 +84,7 @@ export const createOffer = async (
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
 
-  return [pc, offer];
+  return [pc, offer, myVideoSender];
 };
 
 export const createAnswer = async (
@@ -93,7 +95,7 @@ export const createAnswer = async (
   offer,
   name
 ) => {
-  const pc = await setBasics(
+  const [pc, myVideoSender] = await setBasics(
     myStream,
     socket,
     userSocketId,
@@ -105,5 +107,5 @@ export const createAnswer = async (
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
 
-  return [pc, answer];
+  return [pc, answer, myVideoSender];
 };

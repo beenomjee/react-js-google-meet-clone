@@ -1,7 +1,15 @@
+import app from "./app.js";
+import { connect } from "./db/index.js";
 import { Server } from "socket.io";
+import http from "http";
 
-const io = new Server(3001, {
-  cors: true,
+const httpApp = http.createServer(app);
+
+const io = new Server(httpApp, {
+  cors: {
+    origin: true,
+    methods: ["GET", "POST"],
+  },
 });
 
 const rooms = {};
@@ -54,4 +62,13 @@ io.on("connection", (socket) => {
   });
 });
 
-console.log("SEVER STARTED!");
+// port
+const port = process.env.PORT || 3002;
+httpApp.listen(port, (err) => {
+  if (err) {
+    console.log(err);
+    return;
+  }
+  console.log(`Server listening on ${port}`);
+  connect();
+});

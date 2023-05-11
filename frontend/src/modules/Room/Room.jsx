@@ -7,24 +7,27 @@ import { getLocalStream, createOffer, createAnswer, formatAMPM } from '../../uti
 // reactor router dom
 import { useNavigate } from 'react-router-dom';
 // react redux
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // custom
 import { useStateWithCallback } from '../../hooks'
 import { IconButton } from '../../components';
 // icons
 import { BsCameraVideoFill, BsCameraVideoOffFill, BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs'
-import { MdCallEnd, MdSend } from 'react-icons/md'
+import { MdCallEnd, MdOutlineScreenShare, MdOutlineStopScreenShare, MdSend } from 'react-icons/md'
 import { BiMessageDetail } from 'react-icons/bi';
+import { setUser } from '../../store';
 
 const Room = () => {
     const [socket, setSocket] = useState(null);
     const user = useSelector(store => store.user)
+    const dispatch = useDispatch();
     // for webrtc
     const [myStream, setMyStream] = useState(null);
     const navigate = useNavigate();
     const videoContainerRef = useRef(null);
     const [connections, setConnections] = useState({});
     const [unsetCandidates, setUnsetCandidates] = useState([]);
+    const [videoSenders, setVideoSenders] = useState([]);
     // for muting system
     const [enabledObj, setEnabledObj] = useStateWithCallback({ audio: true, video: true })
     // for message menu
@@ -33,9 +36,12 @@ const Room = () => {
     const messageContainerRef = useRef(null);
     const [isNewMessage, setIsNewMessage] = useState(false);
     const audioElRef = useRef(null);
+    // scren sharing
+    const [isScreenSharing, setIsScreenSharing] = useState(false);
 
     const setLocalStream = useCallback(async () => {
         try {
+            if (!user.name) return;
             const stream = await getLocalStream();
             setMyStream(stream);
             videoContainerRef.current.querySelector('#mine').srcObject = stream;
@@ -43,20 +49,24 @@ const Room = () => {
             alert("These permissions are required to access the room!");
             navigate('/');
         }
-    }, [navigate]);
+    }, [navigate, user.name]);
 
     const onJoiningRoom = useCallback(async ({ roomData }) => {
         for (let socketId in roomData) {
-            const [pc, offer] = await createOffer(socket, socketId, myStream, videoContainerRef.current, roomData[socketId].name);
+            const [pc, offer, myVideoSender] = await createOffer(socket, socketId, myStream, videoContainerRef.current, roomData[socketId].name);
             setConnections(prev => ({ ...prev, [socketId]: pc }))
+            // pushing new sender to sender array
+            setVideoSenders(p => [...p, myVideoSender])
             // sending offer
             socket.emit('offer', { to: socketId, offer })
         }
     }, [socket, myStream])
 
     const onComingOffer = useCallback(async ({ from, offer, name }) => {
-        const [pc, answer] = await createAnswer(socket, from, myStream, videoContainerRef.current, offer, name);
+        const [pc, answer, myVideoSender] = await createAnswer(socket, from, myStream, videoContainerRef.current, offer, name);
         setConnections(prev => ({ ...prev, [from]: pc }))
+        // pushing new sender to sender array
+        setVideoSenders(p => [...p, myVideoSender])
         // sending answer
         socket.emit('answer', { to: from, answer })
     }, [myStream, socket]);
@@ -188,7 +198,49 @@ const Room = () => {
         setIsNewMessage(true);
     }, [connections])
 
-    // 1- run first time only
+    const onScreenShare = async () => {
+        if (!isScreenSharing) {
+            try {
+                const myScreenStream = await navigator.mediaDevices.getDisplayMedia({ cursor: true });
+                const screenTrack = myScreenStream.getVideoTracks()[0];
+                for (const myVideoSender of videoSenders) {
+                    myVideoSender.replaceTrack(screenTrack);
+                }
+
+                screenTrack.onended = e => {
+                    for (const myVideoSender of videoSenders) {
+                        myVideoSender.replaceTrack(myStream.getVideoTracks()[0]);
+                    }
+                    // change capture stream to local stream
+                    if (videoContainerRef.current.querySelector('#mine'))
+                        videoContainerRef.current.querySelector('#mine').srcObject = myStream;
+                    // set screen share to change icon
+                    setIsScreenSharing(false);
+                }
+
+                // change local stream to capture stream
+                if (videoContainerRef.current.querySelector('#mine'))
+                    videoContainerRef.current.querySelector('#mine').srcObject = myScreenStream;
+                // set screen share to change icon
+                setIsScreenSharing(true);
+            } catch (err) {
+                alert('This permission is required for screen sharing!');
+                setIsScreenSharing(false);
+            }
+        } else {
+            if (videoContainerRef.current.querySelector('#mine')) {
+                // stoping video sharing
+                videoContainerRef.current.querySelector('#mine').srcObject.getVideoTracks()[0].stop();
+                videoContainerRef.current.querySelector('#mine').srcObject = myStream;
+            }
+            for (const myVideoSender of videoSenders) {
+                myVideoSender.replaceTrack(myStream.getVideoTracks()[0]);
+            }
+            setIsScreenSharing(false);
+        }
+    };
+
+    // 1- run first time only and set stream
     useEffect(() => {
         setLocalStream();
     }, [setLocalStream])
@@ -215,8 +267,9 @@ const Room = () => {
         socket.emit('user:join', { ...user });
         return () => {
             socket.close();
+            dispatch(setUser({ ...user, room: '' }))
         }
-    }, [socket, user])
+    }, [dispatch, socket, user])
 
     // 4- sockets listeners
     useEffect(() => {
@@ -238,7 +291,6 @@ const Room = () => {
             socket.off('message', onMessage);
         }
     }, [socket, onUserMute, onJoiningRoom, onComingOffer, onAnswer, onCandidate, onUserLeave, onMessage]);
-
 
     // 5- set unset candidates
     useEffect(() => {
@@ -275,8 +327,9 @@ const Room = () => {
                 <div className={styles.left}></div>
                 <div className={styles.center}>
                     <IconButton onClick={() => onMute(true)}>{enabledObj.video ? <BsCameraVideoFill /> : <BsCameraVideoOffFill />}</IconButton>
-                    <IconButton onClick={onCallLeave}><MdCallEnd /></IconButton>
                     <IconButton onClick={() => onMute()}>{enabledObj.audio ? <BsFillMicFill /> : <BsFillMicMuteFill />}</IconButton>
+                    <IconButton onClick={onScreenShare}>{isScreenSharing ? <MdOutlineStopScreenShare /> : <MdOutlineScreenShare />}</IconButton>
+                    <IconButton onClick={onCallLeave}><MdCallEnd /></IconButton>
                 </div>
                 <div className={styles.right}>
                     <IconButton onClick={e => setMessageMenuOpen(p => !p)}><BiMessageDetail /><span className={isNewMessage ? styles.show : ''}></span><audio ref={audioElRef} src={process.env.PUBLIC_URL + "/audio/tone.mp3"}></audio></IconButton>

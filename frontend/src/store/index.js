@@ -1,2 +1,9 @@
 export { default as store } from "./store";
-export { setUser } from "./slices";
+export {
+  setUser,
+  loadUser,
+  logoutUser,
+  signInUser,
+  signUpUser,
+  removeError,
+} from "./slices";

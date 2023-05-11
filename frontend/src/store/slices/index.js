@@ -1,1 +1,9 @@
-export { default as userSlice, setUser } from "./userSlice";
+export {
+  default as userSlice,
+  setUser,
+  loadUser,
+  logoutUser,
+  signInUser,
+  signUpUser,
+  removeError,
+} from "./userSlice";
