@@ -268,7 +268,7 @@ const Room = () => {
                     <span id='nameMine'>{user.name}</span>
                     <video id='mine' src="#" muted autoPlay playsInline></video>
                     <IconButton id="btnMine1"><BsFillMicFill /></IconButton>
-                    <IconButton id="btnMine2"><BsFillMicMuteFill /></IconButton>
+                    <IconButton display="none" id="btnMine2"><BsFillMicMuteFill /></IconButton>
                 </div>
             </div>
             <div className={styles.buttonContainer}>

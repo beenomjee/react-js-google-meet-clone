@@ -69,11 +69,12 @@
         color: $light-gray;
         font-size: 2.5rem;
         @include position(absolute, 1rem);
+        z-index: 5;
         outline: none;
         border: none;
         background-color: transparent;
 
-        &:nth-child(4) {
+        &[display="none"] {
           display: none;
         }
       }
