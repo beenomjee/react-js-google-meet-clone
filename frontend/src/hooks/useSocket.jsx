@@ -40,7 +40,6 @@ const useSocket = (initialValue) => {
                     track.stop();
                 }
                 toast.success('Leave Room Successfully!');
-                navigate('/');
             }
         }
     }, [localStream, socket, name, email, file, room, navigate]);

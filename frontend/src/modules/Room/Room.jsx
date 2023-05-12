@@ -22,6 +22,7 @@ const Room = () => {
     const [senders, setSenders] = useState([]);
     const [mySocketId, setMySocketId] = useState(null);
     let [socket, localStream] = useSocket(null);
+    const navigate = useNavigate();
     // speech recognition
     useSpeechRecognition(socket);
 
@@ -114,7 +115,7 @@ const Room = () => {
         }
         // when end button is clicked
         else if (id === 'end') {
-            socket.emit('user:room:leave', {});
+            navigate('/');
         }
 
         // udpating ui

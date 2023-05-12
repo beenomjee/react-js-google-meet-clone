@@ -115,9 +115,9 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("user:room:leave", () => {
+  socket.on("disconnect", () => {
     const room = rooms[socket.room];
-    delete room[socket.id];
+    room[socket.id] && delete room[socket.id];
     io.to(socket.room).emit("user:room:leave", { user: socket.user });
     // updating server room
     rooms[socket.room] = room;
