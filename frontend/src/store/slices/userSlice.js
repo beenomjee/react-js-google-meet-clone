@@ -42,7 +42,6 @@ const signUpUser = createAsyncThunk(
 
 // initial value
 const initialState = {
-  room: "",
   name: "",
   email: "",
   file: "",
@@ -58,7 +57,7 @@ const userSlice = createSlice({
   reducers: {
     setUser(state, action) {
       setLocalStorage("user", action.payload);
-      return action.payload;
+      return { ...state, ...action.payload };
     },
 
     logoutUser(state, action) {

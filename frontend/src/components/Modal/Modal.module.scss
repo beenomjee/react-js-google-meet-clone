@@ -1,0 +1,26 @@
+@import "../../styles";
+
+.modalBg {
+  @include position(fixed, 0, 0, 0, 0);
+  background-color: rgba($color: #000000, $alpha: 0.4);
+  backdrop-filter: blur(5px);
+}
+
+.container {
+  @include position(fixed, 50%, 50%);
+  transform: translate(-50%, -50%) scale(var(--modal-scale));
+  z-index: 100;
+  max-width: 95vw;
+  width: 50rem;
+  height: 30rem;
+  max-height: 70vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 1rem;
+  background-color: orange;
+  transform-origin: center center;
+  @include shadow($shadow-color);
+  transition: transform ease-in calc(var(--modal-animation-duration) * 1ms),
+    width ease-in calc(var(--modal-animation-duration) * 1ms),
+    height ease-in calc(var(--modal-animation-duration) * 1ms);
+}

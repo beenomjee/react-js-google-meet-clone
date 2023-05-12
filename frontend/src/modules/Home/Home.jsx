@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react'
 import styles from './Home.module.scss';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser, setUser } from '../../store';
-import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../../store';
+import { useDispatch } from 'react-redux';
 import { IconButton } from '../../components';
 import { IoIosMenu } from 'react-icons/io'
 import { useClickOutside } from '../../hooks';
@@ -11,12 +11,10 @@ const Home = () => {
     const [room, setRoom] = useState('')
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const user = useSelector(store => store.user);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(setUser({ ...user, room }))
         navigate('/room/' + room);
     }
 

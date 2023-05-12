@@ -6,9 +6,10 @@
   border: none;
   background-color: transparent;
   transition: background-color 0.2s;
-  padding: 0.3rem;
+  padding: 1rem;
   @include flex-inline(row, center, center);
   @include radius(50%);
+  @include font(2.5rem);
 
   &:hover {
     background-color: $light-gray;
