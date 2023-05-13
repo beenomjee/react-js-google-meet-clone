@@ -1,11 +1,16 @@
 import React, { useRef, useState } from 'react'
 import styles from './Home.module.scss';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< Updated upstream
 import { logoutUser, setUser } from '../../store';
+=======
+import { setUser } from '../../store';
+>>>>>>> Stashed changes
 import { useDispatch, useSelector } from 'react-redux';
 import { IconButton } from '../../components';
 import { IoIosMenu } from 'react-icons/io'
 import { useClickOutside } from '../../hooks';
+import { logoutFromGoogle } from '../../firebase';
 
 const Home = () => {
     const [room, setRoom] = useState('')
@@ -28,7 +33,7 @@ const Home = () => {
             <div ref={menuRef} className={styles.topMenu}>
                 <IconButton onClick={e => setIsMenuOpen(p => !p)}><IoIosMenu /></IconButton>
                 <div className={`${styles.menu} ${isMenuOpen ? styles.open : ''}`}>
-                    <button onClick={e => dispatch(logoutUser())}>Logout</button>
+                    <button onClick={logoutFromGoogle}>Logout</button>
                 </div>
             </div>
             <div className={styles.center}>

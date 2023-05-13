@@ -36,8 +36,13 @@ io.on("connection", (socket) => {
     io.to(to).emit("candidate", { from: socket.id, candidate });
   });
 
+<<<<<<< Updated upstream
   socket.on("answer", ({ to, answer }) => {
     io.to(to).emit("answer", { from: socket.id, answer });
+=======
+  socket.on("answer", ({ to, answer, enabledObj }) => {
+    io.to(to).emit("answer", { from: socket.id, answer, enabledObj });
+>>>>>>> Stashed changes
   });
 
   socket.on("mute", ({ enabledObj }) => {
@@ -55,7 +60,14 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     try {
       delete rooms[socket.room][socket.id];
+<<<<<<< Updated upstream
       io.to(socket.room).emit("user:leave", { socketId: socket.id });
+=======
+      io.to(socket.room).emit("user:leave", {
+        socketId: socket.id,
+        name: socket.name,
+      });
+>>>>>>> Stashed changes
 
       if (rooms[socket.room].keys === 0) delete rooms[socket.room];
     } catch (e) {}

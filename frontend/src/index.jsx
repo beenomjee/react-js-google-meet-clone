@@ -10,6 +10,20 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <StoreProvider store={store}>
     <BrowserRouter>
       <App />
+<<<<<<< Updated upstream
+=======
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        draggable
+        pauseOnHover={false}
+        theme="light"
+      />
+>>>>>>> Stashed changes
     </BrowserRouter>
   </StoreProvider>
 )

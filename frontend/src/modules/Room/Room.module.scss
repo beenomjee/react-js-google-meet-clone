@@ -20,8 +20,6 @@
       flex: 1;
       @include center();
       position: relative;
-      pointer-events: none;
-      user-select: none;
 
       & > video {
         width: 100%;
@@ -50,23 +48,22 @@
         @include text($light-gray, $white-space: nowrap);
         @include font(2rem);
         z-index: 1;
-        padding: 5rem;
+        // padding: 5rem;
         background-color: $secondary;
         border-radius: 50%;
         aspect-ratio: 1/1;
         @include center();
         display: none;
+        height: 60%;
 
         &.display {
           display: flex;
         }
-
-        @include l-desktop {
-          transform: translate(-50%, -50%) scale(0.7);
-        }
       }
 
       & > button {
+        pointer-events: none;
+        user-select: none;
         color: $light-gray;
         font-size: 2.5rem;
         @include position(absolute, 1rem);
@@ -151,6 +148,12 @@
         }
       }
     }
+  }
+
+  // message menu
+  & > .bgWrapper {
+    z-index: 11;
+    @include position(fixed, 0, 0, 0, 0);
   }
 
   & > .menu {

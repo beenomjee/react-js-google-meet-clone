@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { removeError, setUser, signUpUser } from '../../store';
 import { Loader } from '../../components';
+import { FcGoogle } from 'react-icons/fc';
+import { loginWithGoogle } from '../../firebase';
 
 const SignUp = () => {
     const { error, isLoading, ...user } = useSelector(store => store.user)
@@ -40,6 +42,10 @@ const SignUp = () => {
         dispatch(signUpUser(data));
     }
 
+    const googleLoginHandler = e => {
+        loginWithGoogle();
+    }
+
     useEffect(() => {
         if (user.name)
             navigate('/');
@@ -70,6 +76,7 @@ const SignUp = () => {
                         <label htmlFor="photo"><img src={data.file ? data.file : `${process.env.PUBLIC_URL}/imgs/avatar.png`} alt="Avatar" /><span className={styles.photo}>Upload Photo</span></label>
                         <p className={`${styles.error} ${error ? styles.show : ''}`}>{error}</p>
                         <button type="submit">Sign Up</button>
+                        <button onClick={googleLoginHandler} className={styles.google} type='button'><span><FcGoogle /></span>Continue with Google</button>
                     </form>
                     <p>Already have account? <Link to='/signin'>Sign In</Link></p>
                 </div>

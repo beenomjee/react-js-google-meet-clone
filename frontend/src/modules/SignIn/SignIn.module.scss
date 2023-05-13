@@ -61,6 +61,19 @@
         &:hover {
           opacity: 0.9;
         }
+
+        &.google {
+          @include center();
+          gap: 1.6rem;
+          background-color: $light;
+          color: $dark;
+          @include shadow($shadow-color);
+
+          & > span {
+            @include center();
+            font-size: 2rem;
+          }
+        }
       }
     }
 
